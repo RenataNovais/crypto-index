@@ -4,7 +4,7 @@ const { generateToken } = require('../auth/token');
 const loginRouter = Router();
 
 const validateEmail = (mail) => {
-  const re = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+  const re = /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/;
   return re.test(String(mail));
 };
 

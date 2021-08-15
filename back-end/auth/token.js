@@ -3,7 +3,7 @@ require('dotenv').config();
 const SECRET = process.env.SECRET || 'token_secret';
 const CONFIG = {
   expiresIn: '7d',
-  algorithm: 'HS256'
+  algorithm: 'HS256',
 };
 
 const jwt = require('jsonwebtoken');
