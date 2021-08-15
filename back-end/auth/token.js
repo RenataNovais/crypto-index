@@ -9,7 +9,7 @@ const CONFIG = {
 const jwt = require('jsonwebtoken');
 
 const generateToken = async (user) => {
-  const { password: _, ...userWithoutPassword } = user.dataValues;
+  const { password: _, ...userWithoutPassword } = user;
 
   return jwt.sign({ userWithoutPassword }, SECRET, CONFIG);
 };
