@@ -1,7 +1,10 @@
 const { Router } = require('express');
 const { decodeToken } = require('../auth/token');
-const requestCoinDesk = require('../helpers/coindeskRequest');
-const calcQuotations = require('../helpers/calcQuotations');
+const {
+  requestCoinDesk,
+  calcQuotations,
+  updateCurrency,
+} = require('../helpers');
 
 const btcRouter = Router();
 
@@ -21,6 +24,27 @@ btcRouter.get('/', async (req, res) => {
   const quotations = { ...btc, bpi: { ...btc.bpi, BRL, EUR, CAD } };
 
   return res.status(200).json(quotations);
+});
+
+btcRouter.post('/', async (req, res) => {
+  const { currency, value } = req.body;
+  const permitedCur = ['BRL', 'EUR', 'CAD'];
+
+  if (!permitedCur.find((x) => x === currency)) {
+    return res.status(400).json({ message: 'Moeda inválida' });
+  }
+
+  if (!(value > 0)) {
+    return res.status(400).json({ message: 'Valor inválido' });
+  }
+
+  const upt = await updateCurrency(currency, value);
+
+  if (upt.status === 400) {
+    return res.status(400).json({ message: `Ocorreu um erro ao atualizar: ${upt.error}` });
+  }
+
+  return res.status(200).json({ message: 'Valor alterado com sucesso!' });
 });
 
 module.exports = btcRouter;

@@ -86,3 +86,41 @@ describe('A API deve ter um endpoint GET /api/crypto/btc', () => {
       });
   });
 });
+
+describe('A API deve ter um endpoint POST /api/crypto/btc que irá atualizar o valor das "currencies"', () => {
+  it('Caso a moeda não esteja entre BRL, EUR ou CAD, deve retornar 400', async () => {
+    await frisby
+      .post(`${url}/api/crypto/btc`, { currency: 'BTC', value: 10000.0 })
+      .expect('status', 400)
+      .expect('json', { message: 'Moeda inválida' });
+  });
+
+  it('Caso o valor seja menor que zero, deve retornar 400', async () => {
+    await frisby
+      .post(`${url}/api/crypto/btc`, { currency: 'BRL', value: -10000.0 })
+      .expect('status', 400)
+      .expect('json', { message: 'Valor inválido' });
+
+    await frisby
+      .post(`${url}/api/crypto/btc`, { currency: 'BRL', value: 0 })
+      .expect('status', 400)
+      .expect('json', { message: 'Valor inválido' });
+  });
+
+  it('O corpo da requisição deve conter as chaves currency e value, e retornar 200 em caso de sucesso', async () => {
+    await frisby
+      .post(`${url}/api/crypto/btc`, { currency: 'BRL', value: 6.500 })
+      .expect('status', 200)
+      .expect('json', { message: 'Valor alterado com sucesso!' });
+
+    await frisby
+      .post(`${url}/api/crypto/btc`, { currency: 'EUR', value: 1.220 })
+      .expect('status', 200)
+      .expect('json', { message: 'Valor alterado com sucesso!' });
+
+    await frisby
+      .post(`${url}/api/crypto/btc`, { currency: 'CAD', value: 1.356 })
+      .expect('status', 200)
+      .expect('json', { message: 'Valor alterado com sucesso!' });
+  });
+});
