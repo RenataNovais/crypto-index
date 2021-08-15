@@ -1,0 +1,1 @@
+// Arquivo para centralizar todas controladoras e facilitar exportação.
