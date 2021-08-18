@@ -1,0 +1,23 @@
+body {
+  max-height: 100vh !important;
+  min-height: auto !important;
+  box-sizing: border-box;
+}
+
+body > div {
+  min-height: auto !important;
+  max-height: 100vh !important;
+}
+
+.App {
+  text-align: center;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
