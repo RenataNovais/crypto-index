@@ -3,10 +3,7 @@
 Este é uma aplicação que permit a visualização do preço do BitCoin em diferentes moedas, com base na API externa da **CoinDesk**. A [documentação está disponível aqui](https://www.coindesk.com/coindesk-api).
 
 É um app full-stack desenvolvido atendendo aos requisitos descritos na segunda seção desta documentação. Neste repositório encontra-se
-tanto o projeto Back-end quanto o Front-end da aplicação, ambos preparados para rodarem localmente nos endereços `http:localhost:3001/`
-e `http:localhost:3000/`respectivamente.
-
----
+tanto o projeto Back-end quanto o Front-end da aplicação, ambos preparados para rodarem localmente nos endereços `http:localhost:3001/` e `http:localhost:3000/`respectivamente.
 
 ## Tecnologias e ferramentas utilizadas
 
@@ -24,8 +21,6 @@ e `http:localhost:3000/`respectivamente.
 - [Material UI](https://material-ui.com/)
 - [SnackBar notistack](https://iamhosseindhv.com/notistack)
 - [Eslint](https://eslint.org/)
-
----
 
 ## Instruções para executar o projeto
 
