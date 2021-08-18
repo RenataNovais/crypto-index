@@ -1,26 +1,42 @@
 # Boas vindas ao projeto Crypto Index!
 
-Aqui você vai encontrar os detalhes de como estruturar o desenvolvimento do seu projeto a partir deste repositório.
+Este é uma aplicação que permit a visualização do preço do BitCoin em diferentes moedas, com base na API externa da **CoinDesk**. A [documentação está disponível aqui](https://www.coindesk.com/coindesk-api).
 
----
+É um app full-stack desenvolvido atendendo aos requisitos descritos na segunda seção desta documentação. Neste repositório encontra-se
+tanto o projeto Back-end quanto o Front-end da aplicação, ambos preparados para rodarem localmente nos endereços `http:localhost:3001/` e `http:localhost:3000/`respectivamente.
 
-## O que deverá ser desenvolvido
+## Tecnologias e ferramentas utilizadas
 
-Você vai desenvolver um app full-stack! Isso significa que você vai construir tanto a API quanto o front-end! 😃
+### Back-end
 
-A aplicação a ser contruída é um "index" para vermos o preço do BitCoin em diferentes moedas.
+- [NodeJS](https://nodejs.org/en/)
+- [Express](https://expressjs.com/pt-br/)
+- [Frisby](https://docs.frisbyjs.com/)
+- [Jest](https://jestjs.io/)
 
----
+### Front-end
 
-## Desenvolvimento
+- [ReactJS](https://pt-br.reactjs.org/)
+- [React Router](https://reactrouter.com/)
+- [Material UI](https://material-ui.com/)
+- [SnackBar notistack](https://iamhosseindhv.com/notistack)
+- [Eslint](https://eslint.org/)
 
-Começando pela API, você vai desenvolver alguns endpoints conectando APIs externas e arquivos JSON locais do projeto.
+## Instruções para executar o projeto
 
-A API externa que vamos utilizar é a da **CoinDesk**. A [documentação está disponível aqui](https://www.coindesk.com/coindesk-api).
+1. Clone o projeto, estando no diretório local que você deseje. Você pode clonar usando o comando `git clone git@github.com:RenataNovais/crypto-index.git`.
 
-O front-end, vai basicamente servir como expositor para a API que você vai criar. São três telas simples que você precisará desenvolver.
+2. Verifique que você está na branch principal do projeto, `main`. É possível verificar executando `git branch`.
 
-Você pode acessar um protótipo das telas [neste link](https://www.figma.com/file/7TbyLzHSCpMRNxHEAN0QOi/Crypto-Index?node-id=0%3A1).
+3. Abra o terminal navegue para pasta do projeto back-end, `cd back-end`. Estando nessa pasta, execute o comando `npm install` para instalar as dependências do projeto. Pronto, agora é possível dar início ao servidor da API com o comando `node index.js`. Basta deixá-lo rodando enquando utiliza a aplicação.
+
+4. Em outro terminal, podemos dar início ao projeto front-end. Navegue até a pasta `cd front-end`, execute o comando `npm install`para instalar as dependências. Ao finalizar a instalação, execute o comando `npm start` e aguarde até o projeto abrir em seu navegador.
+
+Pronto, ao seguir esses passos, você já conseguirá testar e utilizar o nosso Crypto-Index! 😃
+
+##### Observação
+
+- No projeto back-end, é possível executar alguns testes do que foi implementado. Navegue até a pasta `tests` e execute `npm test` ou `npm test <nome_do_arquivo_de_teste>`. Para executar os testes, é necessário que o servidor esteja rodando na porta 3001 (executar `node index.js`).
 
 ---
 
@@ -63,7 +79,7 @@ A resposta da requisição deve ter o seguinte formato:
 
 Esse endpoint deve receber uma requisição do tipo `GET` e retornar o mesmo objeto retornado por [este endpoint](https://api.coindesk.com/v1/bpi/currentprice/BTC.json) da API do CoinDesk. A única diferença é que você deverá adicionar algumas chaves na resposta.
 
-Na resposta desse endpoint, você vai adicionar as chaves `BRL`, `EUR` e `CAD` (Real, Euro e Dólar Canadense). O valor dessas moedas será calculado sobre à cotação do dólar em relação a elas e à cotação do Bitcoin em dólares. 
+Na resposta desse endpoint, você vai adicionar as chaves `BRL`, `EUR` e `CAD` (Real, Euro e Dólar Canadense). O valor dessas moedas será calculado sobre à cotação do dólar em relação a elas e à cotação do Bitcoin em dólares.
 
 O valor da cotação do dólar nessas moedas **será fixo em um dado momento e deverá ser salvo em um arquivo** chamado `currencies.json` na sua API. Inicialmente, esse arquivo deverá ter o conteúdo abaixo:
 
@@ -235,9 +251,4 @@ Consulte o [protótipo](https://www.figma.com/file/7TbyLzHSCpMRNxHEAN0QOi/Crypto
 
 ---
 
-## Instruções para entregar seu projeto:
-
-Crie esse projeto em sua conta no **GitHub** e nos envie o link do repositório.
-Você pode utilizar a tecnologia que quiser tanto para o _backend_ como para o _frontend_.
-
-ps: Lembre-se de deixar o repositório público para que possamos ter acesso ao código
+#### Desenvolvido por Renata Novais
