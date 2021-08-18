@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 // Material UI.
 import Grid from '@material-ui/core/Grid';
@@ -95,9 +95,9 @@ const Home = () => {
     )
   }
 
-  if (edit) {
+  if (edit && bpi) {
     return (
-      <Link to='/edit' />
+      <Redirect to={{ pathname: '/edit', bpi }} />
     )
   }
 
