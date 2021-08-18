@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
+// Snackbar.
+import { useSnackbar } from 'notistack';
+
 // Material UI.
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -21,39 +24,55 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
-    margin: theme.spacing(20, 'auto'),
+    margin: theme.spacing(16, 'auto'),
     padding: theme.spacing(8),
     width: '90%',
+    boxSizing: 'border-box',
 
     [theme.breakpoints.down('sm')]: {
-      maxHeight: '85vh',
       margin: theme.spacing(6, 'auto'),
       padding: theme.spacing(4),
     }
   },
 
   img: {
-    maxWidth: '65%'
+    maxWidth: '50%',
+
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '70%'
+    }
   }
 }));
 
 const Home = () => {
   const [ theme, classes ] = [ useTheme(), useStyles() ];
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [ edit, setEdit ] = useState(false);
+  const [ erro, setErro ] = useState({ type: 'waitingLogin', msg: '' });
+  const [ currencies, setCurrencies ] = useState({});
   const [ bpi, setBpi ] = useState(null);
   const [ btc, setBtc ] = useState(1);
-  const [ usd, setUsd ] = useState(0);
-  const [ brl, setBrl ] = useState(0);
-  const [ eur, setEur ] = useState(0);
-  const [ cad, setCad ] = useState(0);
 
   const handleBtcChange = (e) => {
     setBtc(e.target.value)
 
-    setUsd(e.target.value * bpi.USD.rate_float);
-    setBrl(e.target.value * bpi.BRL.rate_float);
-    setEur(e.target.value * bpi.EUR.rate_float);
-    setCad(e.target.value * bpi.CAD.rate_float);
+    setCurrencies({
+      usd: e.target.value * bpi.USD.rate_float,
+      brl: e.target.value * bpi.BRL.rate_float,
+      eur: e.target.value * bpi.EUR.rate_float,
+      cad: e.target.value * bpi.CAD.rate_float
+    })
+  }
+
+  const handleLoginError = (msg, type) => {
+    const newErr = { type: 'authErr', msg };
+
+    enqueueSnackbar(msg, {
+      action: () => <Button color='secondary' variant='contained' size='small' onClick={ () =>  setErro(newErr) }>Logar</Button>,
+      preventDuplicate: true,
+      persist: true,
+      variant: type
+    });
   }
 
   useEffect(() => {
@@ -61,35 +80,76 @@ const Home = () => {
       const auth = localStorage.getItem('user:AuthToken');
 
       if (auth) {
-        const req = await fetch('http://localhost:3001/api/crypto/btc', {
-          method: 'GET',
-          headers: {
-            'Authorization': auth
+        setErro({ type: '', msg: '' });
+
+        try {
+          const req = await fetch('http://localhost:3001/api/crypto/btc', {
+            method: 'GET',
+            headers: {
+              'Authorization': auth
+            }
+          })
+          const json = await req.json();
+
+          if (req.status !== 200) {
+            throw new Error(json.message)
           }
-        })
-        const json = await req.json();
 
-        setBpi(json.bpi);
+          setBpi(json.bpi);
 
-        setUsd(json.bpi.USD.rate_float);
-        setBrl(json.bpi.BRL.rate_float);
-        setEur(json.bpi.EUR.rate_float);
-        setCad(json.bpi.CAD.rate_float);
+          setCurrencies({
+            usd: json.bpi.USD.rate_float,
+            brl: json.bpi.BRL.rate_float,
+            eur: json.bpi.EUR.rate_float,
+            cad: json.bpi.CAD.rate_float
+          });
+
+        } catch (err) {
+          if (err.message === 'Token inválido') {
+            handleLoginError(err.message, 'warning');
+
+          } else {
+            setErro({ type: 'reqFail', msg: err.message });
+          }
+        }
 
       } else {
-        console.log('Usuário não autenticado.') // FIXME: Criar diálogo de erro.
+        const msg = 'Usuário não autenticado.'
+
+        handleLoginError(msg, 'warning');
       }
     }
 
     getQuotation();
-  }, [])
+  }, []);
 
-  if (!bpi) {
+  if (erro.type === 'reqFail') {
+    enqueueSnackbar(erro.msg, {
+      action: () => <Button color='primary' variant='contained' size='small' onClick={ () => window.location.reload() }>Atualizar</Button>,
+      preventDuplicate: true,
+      variant: 'error'
+    })
+  }
+
+  if (erro.type === 'authErr') {
+    closeSnackbar();
+
+    return (
+      <Redirect to='/login' />
+    )
+  }
+
+  if (!bpi || !currencies) {
     return (
       <Container component='div'>
         <Paper className={ classes.paper } elevation={ 4 }>
           <img src={LogoLoading} alt='Carregando...' style={{ width: '20%', marginBottom: theme.spacing(2) }} />
-          <Typography variant='h5'>Aguarde, estamos carregando as cotações!</Typography>
+          {erro.type === 'waitingLogin' ? (
+            <Typography variant='h5'>Aguarde, estamos carregando!</Typography>
+
+          ) : (
+            <Typography variant='h5'>Aguarde, estamos carregando as cotações!</Typography>
+          )}
         </Paper>
       </Container>
     )
@@ -119,19 +179,19 @@ const Home = () => {
           </Grid>
 
           <Grid item xs={ 12 } md={ 3 }>
-            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='USD' value={ usd } />
+            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='USD' value={ currencies.usd } />
           </Grid>
 
           <Grid item xs={ 12 } md={ 3 }>
-            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='BRL' value={ brl } />
+            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='BRL' value={ currencies.brl } />
           </Grid>
 
           <Grid item xs={ 12 } md={ 3 }>
-            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='EUR' value={ eur } />
+            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='EUR' value={ currencies.eur } />
           </Grid>
 
           <Grid item xs={ 12 } md={ 3 }>
-            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='CAD' value={ cad } />
+            <TextField variant='standard' size='small' inputProps={{ readOnly: true }} label='CAD' value={ currencies.cad } />
           </Grid>
         </Grid>
       </Paper>

@@ -1,10 +1,10 @@
 // React e libs.
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 
 // Main components.
 import * as common from './common';
-import Provider from './provider/Provider';
 
 // Pages.
 import Home from './pages/home';
@@ -21,19 +21,11 @@ import './App.css';
 function App() {
   const [theme, chooseTheme] = common.useThemeChooser();
 
-  React.useEffect(() => {
-    const themePreference = localStorage.getItem('user:themePreference');
-
-    if (themePreference === 'light' || themePreference === 'dark') {
-      chooseTheme(themePreference)
-    }
-  });
-
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <SnackbarProvider anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}>
+        <CssBaseline />
 
-      <Provider>
         <div className="App" style={{ margin: 0, padding: 0, maxHeight: '100vh' }}>
           <BrowserRouter>
             <Switch>
@@ -43,7 +35,7 @@ function App() {
             </Switch>
           </BrowserRouter>
         </div>
-      </Provider>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

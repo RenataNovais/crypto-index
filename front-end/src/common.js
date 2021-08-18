@@ -2,15 +2,13 @@ import React from 'react';
 
 // Material UI styles.
 import { createTheme } from '@material-ui/core/styles';
-import withMobileDialog from '@material-ui/core/withMobileDialog';
-import { darken } from '@material-ui/core/styles/colorManipulator';
-import { green, grey, red } from '@material-ui/core/colors';
-import { blueGrey, deepOrange, deepPurple } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
+import { deepOrange } from '@material-ui/core/colors';
 
 // Globals.
 
 // Simple email validator from "http://stackoverflow.com/questions/46155".
-const EMAIL_RE = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const EMAIL_RE = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 
 const PASSWORD_RE = /^\d+$/;
 
@@ -35,6 +33,11 @@ const LIGHT_THEME = createTheme({
       primary: grey[800],
       secondary: grey[500],
       disabled: 'rgba(0, 0, 0, 0.15)'
+    },
+
+    background: {
+      paper: '#ffff',
+      default: '#ffff'
     },
 
     divider: grey[300]
@@ -92,7 +95,7 @@ const DARK_THEME = createTheme({
     },
 
     secondary: {
-      main: deepPurple[300]
+      main: deepOrange[300]
     },
 
     text: {
@@ -130,7 +133,7 @@ const DARK_THEME = createTheme({
     MuiAppBar: {
       colorPrimary: {
         color: '#e8e6e3',
-        backgroundColor: blueGrey[900]
+        backgroundColor: deepOrange[900]
       }
     },
 

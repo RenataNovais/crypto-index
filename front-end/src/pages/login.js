@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
+// Snackbar.
+import { useSnackbar } from 'notistack';
+
 // Material UI.
 import Paper from '@material-ui/core/Paper';
 import Avatar from '@material-ui/core/Avatar';
@@ -50,12 +53,23 @@ const useStyles = makeStyles(theme => ({
 
 const Login = () => {
   const [ theme, classes ] = [ useTheme(), useStyles() ];
-  const [ loading, setLoading ] = useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [ erro, setErro ] = useState({ type: 'waitingLogin', msg: '' });
   const [ enabled, setEnabled ] = useState(false);
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ erroEmail, setErroEmail ] = useState('');
   const [ erroPassword, setErroPassword ] = useState('');
+
+  const handleLoginError = (msg, type) => {
+    const newErr = { type: 'authErr', msg };
+
+    enqueueSnackbar(msg, {
+      action: () => <Button color='primary' variant='outlined' size='small' onClick={ () =>  setErro(newErr) }>Atualizar</Button>,
+      preventDuplicate: true,
+      variant: type
+    });
+  }
 
   const requestLogin = async () => {
     if (!common.validateEmail(email) && !common.validatePassword(password)) {
@@ -71,25 +85,38 @@ const Login = () => {
       setErroEmail('');
 
     } else {
-      setLoading(true);
-      const req = await fetch(`http://localhost:3001/api/login`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
-      const json = await req.json();
+      try {
+        const req = await fetch(`http://localhost:3001/api/login`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        const json = await req.json();
 
-      if (json.token) {
-        localStorage.setItem('user:AuthToken', json.token)
+        if (req.status !== 200) {
+          throw new Error(json.message)
+        }
 
-        setEnabled(true);
-        setLoading(false);
+        if (json.token) {
+          localStorage.setItem('user:AuthToken', json.token)
+
+          setEnabled(true);
+        }
+
+      } catch (err) {
+        handleLoginError(err.message, 'error');
       }
     }
 
+  }
+
+  if (erro.type === 'authErr') {
+    closeSnackbar();
+
+    return window.location.reload();
   }
 
   if (enabled) {
@@ -100,7 +127,7 @@ const Login = () => {
 
   return (
     <Container component='main'>
-      <Paper className={ classes.paper }>
+      <Paper className={ classes.paper } elevation={ 4 }>
         <Avatar className={ classes.avatar }>
           <LockOutlinedIcon />
         </Avatar>

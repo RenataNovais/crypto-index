@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
+// Snackbar.
+import { useSnackbar } from 'notistack';
+
 // Material UI.
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -44,7 +47,6 @@ const useStyles = makeStyles(theme => ({
     width: '90%',
 
     [theme.breakpoints.down('sm')]: {
-      maxHeight: '85vh',
       margin: theme.spacing(6, 'auto'),
       padding: theme.spacing(4),
     }
@@ -57,35 +59,57 @@ const useStyles = makeStyles(theme => ({
 
 const EditCurrency = (props) => {
   const [ theme, classes ] = [ useTheme(), useStyles() ];
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [ erro, setErro ] = useState({ type: '', msg: '' });
   const [ redirectHome, setRedirectHome ] = useState(false);
   const [ newCurrency, setNewCurrency ] = useState(0);
-
   const [currency, setCurrency] = useState('BRL');
 
   const handleChange = (event) => {
     setCurrency(event.target.value);
   };
 
-  const updateCurrency = async () => {
-    const req = await fetch(`http://localhost:3001/api/crypto/btc`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ currency, value: newCurrency })
+  const handleError = (msg, type) => {
+    const newErr = { type: 'reqErr', msg };
+
+    enqueueSnackbar(msg, {
+      action: () => <Button color='primary' variant='outlined' size='small' onClick={ () =>  setErro(newErr) }>Atualizar</Button>,
+      preventDuplicate: true,
+      persist: true,
+      variant: type
     });
-    const json = await req.json();
+  }
 
-    if (json.message === 'Valor alterado com sucesso!') {
-      setRedirectHome(true);
+  const updateCurrency = async () => {
+    try {
+      const req = await fetch(`http://localhost:3001/api/crypto/btc`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ currency, value: newCurrency })
+      });
+      const json = await req.json();
 
-    } else {
-      console.log(json.message)
+      if (req.status !== 200) {
+        throw new Error(json.message)
+      }
+
+      if (json.message === 'Valor alterado com sucesso!') {
+        setRedirectHome(true);
+      }
+
+    } catch (err) {
+      handleError(err.message, 'error');
     }
   }
 
-  if (redirectHome) {
+  if (redirectHome || erro.type !== '' || !props.location.bpi) {
+    if (erro.type !== '') {
+      closeSnackbar();
+    }
+
     return (
       <Redirect to='/' />
     )
@@ -126,7 +150,12 @@ const EditCurrency = (props) => {
           </Grid>
 
           <Grid item xs={ 12 } md={ 6 } style={{ margin: theme.spacing(3, 0) }}>
-            <TextField variant='standard' inputProps={{ readOnly: true }} label='Valor atual' value={ `${currencies.find(x => x.value === currency).prefix} ${props.location.bpi[currency].rate_float }` } />
+            <TextField
+              variant='standard'
+              inputProps={{ readOnly: true }}
+              label='Valor atual'
+              value={ `${currencies.find(x => x.value === currency).prefix} ${props.location.bpi[currency].rate_float / props.location.bpi.USD.rate_float }` }
+            />
           </Grid>
 
           <Grid item xs={ 12 } style={{ margin: theme.spacing(3, 0) }}>
