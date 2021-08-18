@@ -14,6 +14,11 @@ const EMAIL_RE = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@
 
 const PASSWORD_RE = /^\d+$/;
 
+export const NUMBER_FORMATTER = new Intl.NumberFormat('en-US', {
+  style: 'decimal',
+  maximumFractionDigits: 2
+})
+
 const DEFAULT_THEME = createTheme();
 
 const LIGHT_THEME = createTheme({

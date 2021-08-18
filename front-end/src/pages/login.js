@@ -17,12 +17,29 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import * as common from '../common';
 
 const useStyles = makeStyles(theme => ({
+  '@global': {
+    body: {
+      margin: 0,
+      maxHeight: '100vh',
+      '> div': {
+        maxHeight: '100vh'
+      }
+    }
+  },
+
   paper: {
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
-    margin: theme.spacing(20),
-    padding: theme.spacing(8),
+    margin: theme.spacing(20, 'auto'),
+    padding: theme.spacing(8, 30),
+    width: '90%',
+
+    [theme.breakpoints.down('sm')]: {
+      maxHeight: '85vh',
+      margin: theme.spacing(6, 'auto'),
+      padding: theme.spacing(4),
+    }
   },
   avatar: {
     marginTop: theme.spacing(4),
